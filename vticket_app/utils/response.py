@@ -10,15 +10,15 @@ class RestResponse():
         self.__message = ""
         self.__status = 1
     
-    def set_data(self, data):
+    def set_data(self, data: object):
         self.__data = data
         return self
     
-    def set_message(self, message):
+    def set_message(self, message: str):
         self.__message = message
         return self
     
-    def set_status(self, status):
+    def set_status(self, status: int):
         self.__status = status
         return self
     
@@ -61,4 +61,12 @@ class RestResponse():
     def defined_error(self):
         self.__status = RestResponseStatusEnum.DEFINED_ERROR.value[0]
         self.__message = RestResponseStatusEnum.DEFINED_ERROR.value[1]
+        return self
+    
+    def direct(self, to: str):
+        self.__data = {
+            "target": to
+        }
+        self.__status = RestResponseStatusEnum.DIRECT.value[0]
+        self.__message = RestResponseStatusEnum.DIRECT.value[1]
         return self
