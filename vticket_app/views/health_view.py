@@ -5,9 +5,9 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import action
 
 from vticket_app.utils.response import RestResponse
-
+from vticket_app.middlewares.custom_permissions.is_authenticated import IsAuthenticated
 class HealthView(ViewSet):
-    @action(["GET"], detail=False, url_path="check")
+    @action(["GET"], detail=False, url_path="check", permission_classes=[IsAuthenticated])
     def health(self, request):
         data = {
             "base_url": request.build_absolute_uri(),

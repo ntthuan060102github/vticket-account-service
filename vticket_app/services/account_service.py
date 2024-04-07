@@ -1,6 +1,3 @@
-import random
-from typing import Any
-from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 
 from vticket_app.helpers.otp_provider import OTPProvider
@@ -8,7 +5,7 @@ from vticket_app.models.user import User
 from vticket_app.enums.account_error_enum import AccountErrorEnum
 from vticket_app.enums.account_status_enum import AccountStatusEnum
 from vticket_app.helpers.password_provider import PasswordProvider
-from vticket_app.services.email_providers.email_provider import EmailProvider
+from vticket_app.helpers.email_providers.email_provider import EmailProvider
 
 class AccountService():
     email_provider = EmailProvider()
@@ -85,6 +82,23 @@ class AccountService():
                     "new_password": new_password
                 }
             )
+            return AccountErrorEnum.ALL_OK
+        except ObjectDoesNotExist:
+            return AccountErrorEnum.NOT_EXISTS
+        except Exception as e:
+            print(e)
+            raise e
+        
+    def verify_account(self, email: str, otp: str):
+        try:
+            account = User.objects.get(email=email)
+
+            if not self.otp_provider.verify_otp(otp=otp, key=f"registration:{email}", delete=True):
+                return AccountErrorEnum.INVALID_OTP
+            
+            account.status = AccountStatusEnum.ACTIVED
+            account.save(update_fields=["status"])
+
             return AccountErrorEnum.ALL_OK
         except ObjectDoesNotExist:
             return AccountErrorEnum.NOT_EXISTS
