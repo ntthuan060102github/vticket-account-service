@@ -105,3 +105,23 @@ class AccountService():
         except Exception as e:
             print(e)
             raise e
+        
+    def change_password(self, user_id: int, old_password: str, new_password: str) -> AccountErrorEnum:
+        try:
+            account = User.objects.get(id=user_id)
+
+            if not account.check_password(old_password):
+                return AccountErrorEnum.INCORRECT_PASSWORD
+            
+            if not self.password_provider.check_password_strength(new_password):
+                return AccountErrorEnum.WEAK_PASSWORD
+            
+            account.set_password(new_password)
+            account.save(update_fields=["password"])
+            
+            return AccountErrorEnum.ALL_OK
+        except ObjectDoesNotExist:
+            return AccountErrorEnum.NOT_EXISTS
+        except Exception as e:
+            print(e)
+            raise e

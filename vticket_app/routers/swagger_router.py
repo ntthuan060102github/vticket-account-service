@@ -8,12 +8,11 @@ schema_view = get_schema_view(
       title="VTicket",
       default_version='v1',
       description="VTicket",
-      # terms_of_service="",
       contact=openapi.Contact(email="ntthuan060102.work@gmail.com"),
-      # license=openapi.License(name="BSD License"),
    ),
    public=True,
    permission_classes=(permissions.AllowAny,),
+   authentication_classes=()
 )
 
 urls = (

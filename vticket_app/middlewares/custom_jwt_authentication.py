@@ -1,6 +1,7 @@
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 
+from vticket_app.dtos.user_dto import UserDTO
 from vticket_app.helpers.session_provider import SessionProvider
 
 class CustomJWTAuthentication(BaseAuthentication):
@@ -16,3 +17,8 @@ class CustomJWTAuthentication(BaseAuthentication):
 
         if not self.session_provider.verify_token(token=token):
             raise AuthenticationFailed("Verify token failed!")
+        
+        session_data = self.session_provider.get_payload(token=token)
+        user_dto = UserDTO(**session_data)
+        
+        return (user_dto, None)
