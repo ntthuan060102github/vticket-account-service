@@ -6,18 +6,22 @@ from drf_yasg.utils import swagger_auto_schema
 from vticket_app.models.user import User
 from vticket_app.utils.response import RestResponse
 from vticket_app.decorators.validate_body import validate_body
-from vticket_app.enums.account_error_enum import AccountErrorEnum
-from vticket_app.helpers.regex_provider import RegexProvider
 from vticket_app.services.account_service import AccountService
-from vticket_app.validations.change_password_validator import ChangePasswordValidator
-from vticket_app.validations.email_validator import EmailValidation
-from vticket_app.validations.register_input_validator import RegisterInputValidator
-from vticket_app.validations.email_and_otp_validator import EmailOTPValidation
+from vticket_app.enums.account_error_enum import AccountErrorEnum
+from vticket_app.middlewares.custom_jwt_authentication import CustomJWTAuthentication
+
+from vticket_app.helpers.regex_provider import RegexProvider
 from vticket_app.helpers.swagger_provider import SwaggerProvider
+
+from vticket_app.validations.email_validator import EmailValidation
+from vticket_app.validations.email_and_otp_validator import EmailOTPValidation
+from vticket_app.validations.register_input_validator import RegisterInputValidator
+from vticket_app.validations.change_password_validator import ChangePasswordValidator
 
 class AccountView(viewsets.ViewSet):
     account_service = AccountService()
     regex_provider = RegexProvider()
+    authentication_classes = ()
 
     @action(methods=["POST"], detail=False, url_path="register")
     @swagger_auto_schema(request_body=RegisterInputValidator)
@@ -87,7 +91,7 @@ class AccountView(viewsets.ViewSet):
             print(e)
             return RestResponse().internal_server_error().response
         
-    @action(methods=["POST"], detail=False, url_path="change-password")
+    @action(methods=["POST"], detail=False, url_path="change-password", authentication_classes=(CustomJWTAuthentication,))
     @swagger_auto_schema(request_body=ChangePasswordValidator, manual_parameters=[SwaggerProvider.header_authentication()])
     @validate_body(ChangePasswordValidator)
     def change_password(self, request: Request, validated_data: dict):
