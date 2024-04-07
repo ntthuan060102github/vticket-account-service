@@ -11,7 +11,7 @@ from vticket_app.helpers.regex_provider import RegexProvider
 from vticket_app.services.account_service import AccountService
 from vticket_app.validations.email_validator import EmailValidation
 from vticket_app.validations.register_input_validator import RegisterInputValidator
-from vticket_app.validations.reset_password_validator import ResetPasswordValidation
+from vticket_app.validations.email_and_otp_validator import EmailOTPValidation
 
 class AccountView(viewsets.ViewSet):
     account_service = AccountService()
@@ -28,7 +28,27 @@ class AccountView(viewsets.ViewSet):
         except Exception as e:
             print(e)
             return RestResponse().internal_server_error().response
-    
+        
+    @action(methods=["POST"], detail=False, url_path=f"verification")
+    @swagger_auto_schema(request_body=EmailOTPValidation)
+    @validate_body(EmailOTPValidation)
+    def verify_account(self, request: Request, validated_data: dict):
+        try:
+            _email = validated_data["email"]
+            _reset_result = self.account_service.verify_account(
+                email=_email, 
+                otp=validated_data["otp"]
+            )
+
+            return {
+                AccountErrorEnum.ALL_OK: RestResponse().success().set_message("Tài khoản của bạn đã được xác minh thành công!").response,
+                AccountErrorEnum.NOT_EXISTS: RestResponse().defined_error().set_message("Này bạn! Email mà bạn nhập không tồn tại trong hệ thống của chúng tôi.").response,
+                AccountErrorEnum.INVALID_OTP: RestResponse().defined_error().set_message("OTP không hợp lệ hoặc đã hết hạn!").response
+            }[_reset_result]
+        except Exception as e:
+            print(e)
+            return RestResponse().internal_server_error().response
+        
     @action(methods=["POST"], detail=False, url_path=f"reset-password/request")
     @swagger_auto_schema(request_body=EmailValidation)
     @validate_body(EmailValidation)
@@ -45,9 +65,9 @@ class AccountView(viewsets.ViewSet):
             print(e)
             return RestResponse().internal_server_error().response
         
-    @action(methods=["POST"], detail=False, url_path=f"reset-password")
-    @swagger_auto_schema(request_body=ResetPasswordValidation)
-    @validate_body(ResetPasswordValidation)
+    @action(methods=["POST"], detail=False, url_path="reset-password")
+    @swagger_auto_schema(request_body=EmailOTPValidation)
+    @validate_body(EmailOTPValidation)
     def reset_password(self, request: Request, validated_data: dict):
         try:
             _email = validated_data["email"]
