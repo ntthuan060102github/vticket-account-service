@@ -1,0 +1,16 @@
+CREATE TABLE `user` (
+	`id` INT(10) NOT NULL AUTO_INCREMENT,
+	`email` VARCHAR(254) NOT NULL,
+	`first_name` VARCHAR(100) NOT NULL,
+	`last_name` VARCHAR(100) NOT NULL,
+	`password` VARCHAR(128) NOT NULL,
+	`gender` SMALLINT(5) NOT NULL,
+	`birthday` DATE NULL DEFAULT NULL,
+	`avatar_url` VARCHAR(1500) NULL DEFAULT NULL,
+	`phone_number` VARCHAR(15) NULL DEFAULT NULL,
+	`status` VARCHAR(50) NOT NULL,
+	`last_login` DATETIME(6) NULL DEFAULT NULL,
+	`role` VARCHAR(20) NOT NULL DEFAULT 'customer',
+	PRIMARY KEY (`id`) USING BTREE,
+	UNIQUE INDEX `email` (`email`) USING BTREE
+);
