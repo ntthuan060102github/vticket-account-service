@@ -139,7 +139,7 @@ AUTH_USER_MODEL = "vticket_app.User"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'vticket_app.middlewares.custom_jwt_authentication.CustomJWTAuthentication',
     )
 }
 
@@ -148,7 +148,7 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=50),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
-    'UPDATE_LAST_LOGIN': False,
+    'UPDATE_LAST_LOGIN': True,
 
     'ALGORITHM': 'HS256',
 
@@ -174,7 +174,8 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 
-    'TOKEN_OBTAIN_SERIALIZER': 'vticket_app.serializers.custom_token_obtain_pair_serializer.CustomTokenObtainPairSerializer'
+    'TOKEN_OBTAIN_SERIALIZER': 'vticket_app.serializers.custom_token_obtain_pair_serializer.CustomTokenObtainPairSerializer',
+    'TOKEN_REFRESH_SERIALIZER': 'vticket_app.serializers.custom_token_refresh_serializer.CustomTokenRefreshSerializer'
 }
 
 # Email backend configs
@@ -191,5 +192,14 @@ CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': 'redis://default:8Kkvdd5RctKyGHxfs53rosPLJ2pwJ4M7@redis-10644.c294.ap-northeast-1-2.ec2.cloud.redislabs.com:10644',
+    }
+}
+
+# Swagger
+SWAGGER_SETTINGS = {
+    'Bearer': {
+        'type': 'apiKey',
+        'name': 'Authorization',
+        'in': 'header'
     }
 }

@@ -7,4 +7,5 @@ class RestResponseStatusEnum(Enum):
     UNAUTHENTICATED = (3, "Uh oh! Bạn cần phải đăng nhập trước khi tiếp tục phiêu lưu.")
     THROTTLED = (4, "Oops! Sống chậm lai nào bạn ơi.")
     VALIDATION_FAILED = (5, "Pipppp! Dữ liệu này... trông hơi mờ ám!")
-    INTERNAL_SERVER_ERROR = (6, "Oops! Máy chủ của chúng tôi đang chịu ảnh hưởng bởi một lực lượng siêu nhiên. Hãy kiên nhẫn chờ đợi trong khi chúng tôi triệu hồi thần linh sửa chữa!");
+    INTERNAL_SERVER_ERROR = (6, "Oops! Máy chủ của chúng tôi đang chịu ảnh hưởng bởi một lực lượng siêu nhiên. Hãy kiên nhẫn chờ đợi trong khi chúng tôi triệu hồi thần linh sửa chữa!")
+    DIRECT = (7, "")
