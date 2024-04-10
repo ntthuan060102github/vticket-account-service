@@ -11,7 +11,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs: Dict[str, Any]) -> Dict[str, str]:
         try:
             validated_data = super().validate(attrs)
-            self.authentication_service.save_session(self.user)
+            refresh_jti = self.token_class(validated_data["refresh"]).payload["jti"]
+            access_jti = self.token_class.access_token_class(validated_data["access"]).payload["jti"]
+            self.authentication_service.save_session(self.user, access_jti, refresh_jti)
 
             return validated_data
         except AuthenticationFailed as e:
