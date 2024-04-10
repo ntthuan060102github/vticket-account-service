@@ -13,7 +13,8 @@ class SessionProvider():
     def verify_token(self, token: str):
         try:
             user_id = self.__base_access_token_class(token=token).payload.get("user_id", None)
-            return cache.has_key(f"{self.__prefix_key}:{user_id}:{TokenTypeEnum.access.value}")
+            jti = self.__base_access_token_class(token=token).payload["jti"]
+            return cache.has_key(f"{self.__prefix_key}:{user_id}:{TokenTypeEnum.access.value}:{jti}")
         except Exception as e:
             print(e)
             return False
