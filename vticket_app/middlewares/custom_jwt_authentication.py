@@ -18,7 +18,7 @@ class CustomJWTAuthentication(BaseAuthentication):
         if not self.session_provider.verify_token(token=token):
             raise AuthenticationFailed("Verify token failed!")
         
-        session_data = self.session_provider.get_payload(token=token)
+        session_data = self.session_provider.get_context(token=token)
         user_dto = UserDTO(**session_data)
         
         return (user_dto, None)
