@@ -13,7 +13,7 @@ class SessionProvider():
             print(e)
             return False
 
-    def get_payload(self, token: str):
+    def get_context(self, token: str):
         try:
             user_id = self.__base_access_token_class(token=token).payload.get("user_id", None)
             session_data = json.loads(cache.get(f"session:{user_id}:access"))
