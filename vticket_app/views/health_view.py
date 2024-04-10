@@ -7,6 +7,8 @@ from rest_framework.decorators import action
 from vticket_app.utils.response import RestResponse
 
 class HealthView(ViewSet):
+    authentication_classes = ()
+
     @action(["GET"], detail=False, url_path="check")
     def health(self, request):
         data = {
