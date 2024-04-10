@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'vticket.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql', 
+        'ENGINE': 'django.db.backends.postgresql', 
         'NAME': config("MYSQL_DATABASE_DB", default="vticket"),
         'USER': config("MYSQL_DATABASE_USER", "root"),
         'PASSWORD': config("MYSQL_DATABASE_PASSWORD", "thuan123"),
