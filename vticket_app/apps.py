@@ -7,3 +7,7 @@ class VticketAccountServiceConfig(AppConfig):
     app_version = 'v1'
     app_route = 'doris-account-service'
     api_prefix = f"apis/{app_route}/{app_version}/"
+
+    def ready(self) -> None:
+        super().ready()
+        import vticket_app.configs.firebase_storage

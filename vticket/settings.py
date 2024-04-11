@@ -204,3 +204,6 @@ SWAGGER_SETTINGS = {
         'in': 'header'
     }
 }
+
+# Firebase
+FIREBASE_ACCOUNT_CERTIFICATE = config("FIREBASE_ACCOUNT_CERTIFICATE", None)
