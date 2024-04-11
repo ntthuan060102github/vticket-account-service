@@ -192,7 +192,7 @@ EMAIL_USE_SSL = False
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://default:8Kkvdd5RctKyGHxfs53rosPLJ2pwJ4M7@redis-10644.c294.ap-northeast-1-2.ec2.cloud.redislabs.com:10644',
+        'LOCATION': config("CACHE_URL", None),
     }
 }
 
