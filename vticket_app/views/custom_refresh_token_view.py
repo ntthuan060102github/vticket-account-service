@@ -10,4 +10,4 @@ class CustomRefreshTokenView(TokenRefreshView):
             return RestResponse().success().set_data(response.data).response
         except Exception as e:
             print(e)
-            return RestResponse().defined_error().set_message("Refresh token hết hạn hoặc không hợp lệ!").response
+            return RestResponse().direct("/login").set_message("Refresh token hết hạn hoặc không hợp lệ!").response
