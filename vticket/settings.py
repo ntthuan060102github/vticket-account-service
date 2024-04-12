@@ -25,14 +25,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-2=^^^-2)4f&(w*1^tv-kmrvntw#5t$116!9(l4a@7wvhh7pes^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(config("DEBUG", False))
 
 ALLOWED_HOSTS = ["*"]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-ENVIRONMENT = "local"
+# Environment
 
+ENVIRONMENT = config("APP_ENV", "local")
 
 # Application definition
 
@@ -185,10 +186,10 @@ SIMPLE_JWT = {
 
 # Email backend configs
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'system.selina@gmail.com'
-EMAIL_HOST_PASSWORD = 'pwgporiahuzmfdex'
+EMAIL_HOST = config("EMAIL_HOST", None)
+EMAIL_PORT = config("EMAIL_PORT", None)
+EMAIL_HOST_USER = config("EMAIL_HOST_USER", None)
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", None)
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
