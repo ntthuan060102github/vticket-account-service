@@ -63,9 +63,10 @@ class RestResponse():
         self.__message = RestResponseStatusEnum.DEFINED_ERROR.value[1]
         return self
     
-    def direct(self, to: str):
+    def direct(self, to: str, payload = None):
         self.__data = {
-            "target": to
+            "target": to,
+            "payload": payload
         }
         self.__status = RestResponseStatusEnum.DIRECT.value[0]
         self.__message = RestResponseStatusEnum.DIRECT.value[1]

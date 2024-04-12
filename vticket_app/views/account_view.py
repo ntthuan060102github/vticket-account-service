@@ -29,8 +29,9 @@ class AccountView(viewsets.ViewSet):
     def create_account(self, request: Request, validated_body: dict):
         try:
             self.account_service.create_account(User(**validated_body))
+            _email = validated_body["email"]
             
-            return RestResponse().success().set_message("Chúc mừng! Bạn vừa tạo ra một hồn ma mới trong hệ thống!").response
+            return RestResponse().direct(f"/otp/{_email}").set_message("Chúc mừng! Bạn vừa tạo ra một hồn ma mới trong hệ thống!").response
         except Exception as e:
             print(e)
             return RestResponse().internal_server_error().response
