@@ -10,4 +10,5 @@ class RegisterInputValidator(serializers.ModelSerializer):
         model = User
         fields = ("email", "first_name", "last_name", "gender", "birthday", "password", "role")
 
+    email = serializers.EmailField()
     role = serializers.ChoiceField(choices=list(set(RoleEnum.values) - set(except_roles)))

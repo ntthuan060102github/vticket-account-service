@@ -3,6 +3,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 
 from vticket_app.enums.account_status_enum import AccountStatusEnum
+from vticket_app.errors.un_verified_exception import UnVerifiedException
 from vticket_app.services.authentication_service import AuthenticationService
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -17,7 +18,13 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
             return validated_data
         except AuthenticationFailed as e:
-            if self.user is not None and self.user.status in (AccountStatusEnum.UNVERIFIED, AccountStatusEnum.BLOCKED):
+            if self.user is None:
+                raise e
+            
+            if self.user.status == AccountStatusEnum.BLOCKED:
                 raise PermissionDenied("non activated account!")
+            elif self.user.status == AccountStatusEnum.UNVERIFIED:
+                raise UnVerifiedException("Unverified account!")
+            
             raise e
         

@@ -28,10 +28,15 @@ class AccountView(viewsets.ViewSet):
     @validate_body(RegisterInputValidator)
     def create_account(self, request: Request, validated_body: dict):
         try:
-            self.account_service.create_account(User(**validated_body))
+            result = self.account_service.create_account(User(**validated_body))
             _email = validated_body["email"]
+
+            return {
+                AccountErrorEnum.ALL_OK: RestResponse().direct(f"/otp/{_email}").set_message("Chúc mừng! Bạn vừa tạo ra một hồn ma mới trong hệ thống!").response,
+                AccountErrorEnum.EXISTED: RestResponse().defined_error().set_message("Email đã tồn tại trong hệ thống!").response,
+            }[result]
             
-            return RestResponse().direct(f"/otp/{_email}").set_message("Chúc mừng! Bạn vừa tạo ra một hồn ma mới trong hệ thống!").response
+            return 
         except Exception as e:
             print(e)
             return RestResponse().internal_server_error().response
