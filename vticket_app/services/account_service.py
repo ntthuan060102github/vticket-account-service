@@ -1,4 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.utils import IntegrityError
 
 from vticket_app.helpers.otp_provider import OTPProvider
 from vticket_app.models.user import User
@@ -17,7 +18,7 @@ class AccountService():
         "new_password": ("reset_password_mail.html", "[V-Ticket] New your password")
     }
 
-    def create_account(self, account : User) -> None:
+    def create_account(self, account : User) -> AccountErrorEnum:
         try:
             account.set_password(account.password)
             account.status = AccountStatusEnum.UNVERIFIED
@@ -25,8 +26,7 @@ class AccountService():
             
             otp = self.otp_provider.generate_6_char()
             self.otp_provider.save_otp_to_time_db(otp=otp, key=f"registration:{account.email}", ttl=15*60)
-            
-            return self.email_provider.send_html_template_email(
+            self.email_provider.send_html_template_email(
                 to=[account.email],
                 cc=[],
                 subject=self.mail_info["registration"][1],
@@ -35,6 +35,10 @@ class AccountService():
                     "otp": otp
                 }
             )
+
+            return AccountErrorEnum.ALL_OK
+        except IntegrityError as e:
+            return AccountErrorEnum.EXISTED
         except Exception as e:
             print(e)
             raise Exception(e)
@@ -125,3 +129,16 @@ class AccountService():
         except Exception as e:
             print(e)
             raise e
+        
+    def resend_registration_otp(self, email: str):
+        otp = self.otp_provider.generate_6_char()
+        self.otp_provider.save_otp_to_time_db(otp=otp, key=f"registration:{email}", ttl=15*60)
+        self.email_provider.send_html_template_email(
+            to=[email],
+            cc=[],
+            subject=self.mail_info["registration"][1],
+            template_name=self.mail_info["registration"][0],
+            context={
+                "otp": otp
+            }
+        )
