@@ -129,3 +129,16 @@ class AccountService():
         except Exception as e:
             print(e)
             raise e
+        
+    def resend_registration_otp(self, email: str):
+        otp = self.otp_provider.generate_6_char()
+        self.otp_provider.save_otp_to_time_db(otp=otp, key=f"registration:{email}", ttl=15*60)
+        self.email_provider.send_html_template_email(
+            to=[email],
+            cc=[],
+            subject=self.mail_info["registration"][1],
+            template_name=self.mail_info["registration"][0],
+            context={
+                "otp": otp
+            }
+        )
