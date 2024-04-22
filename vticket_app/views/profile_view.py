@@ -6,10 +6,13 @@ from rest_framework import viewsets
 from rest_framework.decorators import action, parser_classes
 from rest_framework.request import Request
 
+from vticket_app.middlewares.custom_jwt_authentication import CustomJWTAuthentication
 from vticket_app.utils.response import RestResponse
 from vticket_app.decorators.validate_body import validate_body
 from vticket_app.services.profile_service import ProfileService
 from vticket_app.validations.change_avatar_validator import ChangeAvatarValidator
+from vticket_app.validations.update_profile_validator import UpdateProfileValidator
+from vticket_app.dtos.update_profile_dto import UpdateProfileDTO
 
 from vticket_app.helpers.swagger_provider import SwaggerProvider
 from vticket_app.helpers.image_storage_providers.image_storage_provider import ImageStorageProvider
@@ -36,6 +39,21 @@ class ProfileView(viewsets.ViewSet):
                 return RestResponse().success().set_message("Một diện mạo mới, một tinh thần mới! 😄✨").response
             else:
                 return RestResponse().defined_error().set_message("Có chút trục trặc trong khi chúng tôi đang cố gắng thay bức hình tuyệt vời này!").response
+        except Exception as e:
+            print(e)
+            return RestResponse().internal_server_error().response
+    
+    @action(methods=["PATCH"], detail=False, url_path="me", authentication_classes=(CustomJWTAuthentication,))
+    @validate_body(UpdateProfileValidator)
+    @swagger_auto_schema(request_body=UpdateProfileValidator, manual_parameters=[SwaggerProvider.header_authentication()])
+    def change_profile(self, request: Request, validated_body):   
+        try:
+            dto = UpdateProfileDTO(**validated_body)
+            updated = self.profile_service.change_profile(request.user.id, dto)
+            if updated:
+                return RestResponse().success().set_message("Một diện mạo mới, một tinh thần mới! 😄✨").response
+            else:
+                return RestResponse().defined_error().set_message("Có chút trục trặc trong khi chúng tôi đang cố gắng thay đổi thông tin của bạn!").response
         except Exception as e:
             print(e)
             return RestResponse().internal_server_error().response
