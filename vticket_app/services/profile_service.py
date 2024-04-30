@@ -1,7 +1,5 @@
-import dataclasses
 from vticket_app.models.user import User
 from vticket_app.serializers.user_serializer import UserSerializer
-from vticket_app.dtos.update_profile_dto import UpdateProfileDTO
 
 class ProfileService():
     serializer_class = UserSerializer
@@ -16,17 +14,21 @@ class ProfileService():
             print(e)
             return False
         
-    def change_profile(self, user_id: int, profile: UpdateProfileDTO) -> bool:
+    def update_profile(self, user: User, update_data: dict) -> bool:
         try:
-            instance = User.objects.get(id=user_id)
-            _data = dataclasses.asdict(profile)
-            user_serializer = UserSerializer(instance, data=_data, partial=True)
-            if user_serializer.is_valid():
-                user_serializer.save()
-                return True
-            else:
-                print(user_serializer.errors)
-                return False
+            print(user)
+            for k, v in update_data.items():
+                setattr(user, k, v)
+
+            user.save(update_fields=update_data.keys())
+
+            return True
         except Exception as e:
             print(e)
             return False
+        
+    def get_profile_by_id(self, user_id: int) -> User:
+        try:
+            return User.objects.get(id=user_id)
+        except:
+            return None
