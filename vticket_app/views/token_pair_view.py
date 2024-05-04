@@ -5,16 +5,24 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from vticket_app.errors.un_verified_exception import UnVerifiedException
 from vticket_app.services.account_service import AccountService
+from vticket_app.services.profile_service import ProfileService
 from vticket_app.utils.response import RestResponse
 
 class TokenPairView(TokenObtainPairView):
     account_service = AccountService()
+    profile_service = ProfileService()
     
     def post(self, request: Request, *args, **kwargs):
         try:
             response = super().post(request, *args, **kwargs)
+            print()
         
-            return RestResponse().success().set_data(response.data).response
+            return RestResponse().success().set_data(
+                {
+                    **response.data,
+                    "profile": self.profile_service.get_profile_by_email(request.data["email"])
+                }
+            ).response
         except serializers.ValidationError:
             return RestResponse().validation_failed().set_message("Dữ liệu đầu vào không hợp lệ!").response
         except UnVerifiedException as e:
