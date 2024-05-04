@@ -28,8 +28,18 @@ class ProfileService():
             print(e)
             return False
         
-    def get_profile_by_id(self, user_id: int) -> Union[User| None]:
+    def get_profile_by_id(self, user_id: int) -> Union[User | None]:
         try:
             return User.objects.get(id=user_id)
         except:
             return None
+
+    def get_profile_by_email(self, email: str) -> Union[dict | None]:
+        try:
+            instance = User.objects.get(email=email)
+            return UserSerializer(instance, exclude=["password", "last_login"]).data
+        except Exception as e:
+            print(e)
+            return None
+
+            
