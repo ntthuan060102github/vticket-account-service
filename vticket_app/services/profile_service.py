@@ -1,5 +1,4 @@
 from typing import Union
-
 from vticket_app.models.user import User
 from vticket_app.serializers.user_serializer import UserSerializer
 
@@ -29,7 +28,7 @@ class ProfileService():
             print(e)
             return False
         
-    def get_profile_by_id(self, user_id: int) -> User:
+    def get_profile_by_id(self, user_id: int) -> Union[User | None]:
         try:
             return User.objects.get(id=user_id)
         except:

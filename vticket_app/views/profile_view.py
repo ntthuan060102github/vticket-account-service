@@ -6,14 +6,11 @@ from rest_framework import viewsets
 from rest_framework.decorators import action, parser_classes
 from rest_framework.request import Request
 
-from vticket_app.middlewares.custom_jwt_authentication import CustomJWTAuthentication
-from vticket_app.models.user import User
 from vticket_app.utils.response import RestResponse
 from vticket_app.decorators.validate_body import validate_body
 from vticket_app.services.profile_service import ProfileService
 from vticket_app.validations.change_avatar_validator import ChangeAvatarValidator
 from vticket_app.serializers.update_profile_serializer import UpdateProfileSerializer
-from vticket_app.dtos.update_profile_dto import UpdateProfileDTO
 
 from vticket_app.helpers.swagger_provider import SwaggerProvider
 from vticket_app.helpers.image_storage_providers.image_storage_provider import ImageStorageProvider
