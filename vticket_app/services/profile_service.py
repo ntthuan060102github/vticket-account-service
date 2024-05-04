@@ -1,3 +1,5 @@
+from typing import Union
+
 from vticket_app.models.user import User
 from vticket_app.serializers.user_serializer import UserSerializer
 
@@ -32,3 +34,13 @@ class ProfileService():
             return User.objects.get(id=user_id)
         except:
             return None
+
+    def get_profile_by_email(self, email: str) -> Union[dict | None]:
+        try:
+            instance = User.objects.get(email=email)
+            return UserSerializer(instance, exclude=["password", "last_login"]).data
+        except Exception as e:
+            print(e)
+            return None
+
+            
