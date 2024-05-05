@@ -3,7 +3,6 @@ from typing import Union
 from vticket_app.models.user import User
 from vticket_app.enums.account_status_enum import AccountStatusEnum
 from vticket_app.serializers.user_serializer import UserSerializer
-from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.db.models import Q
 
 class UserService:

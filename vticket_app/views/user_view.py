@@ -1,17 +1,13 @@
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-from rest_framework.parsers import MultiPartParser
 from rest_framework import viewsets
 from rest_framework.decorators import action, parser_classes
 from rest_framework.request import Request
 
-from vticket_app.dtos.user_dto import UserDTO
 from vticket_app.services.user_service import UserService
 from vticket_app.serializers.user_serializer import UserSerializer
 from vticket_app.utils.response import RestResponse
-from vticket_app.decorators.validate_body import validate_body
-from vticket_app.serializers.update_profile_serializer import UpdateProfileSerializer
 from vticket_app.middlewares.custom_permissions.is_admin import IsAdmin
 from vticket_app.helpers.swagger_provider import SwaggerProvider
 
