@@ -7,21 +7,33 @@ from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.db.models import Q
 
 class UserService:
-    def lock_user(self, user_id: int) -> bool:
+    def lock_user(self, user_id: int) -> 1 | 2 | 3:
+        """
+            Return value meaning:
+            - 1: Account blocked, cann't execute block operation.
+            - 2: Success.
+            - 3: Failed.
+        """
+
         try:
             user = User.objects.get(id=user_id)
+
+            if user.status == AccountStatusEnum.BLOCKED:
+                return 1
+            
             user.status = AccountStatusEnum.BLOCKED
             user.save(update_fields=["status"])
-            return True
+            return 2
         except Exception as e:
             print(e)
-            return False
+            return 3
 
-    def unlock_user(self, user_id: int):
+    def unlock_user(self, user_id: int) -> bool:
         try:
             user = User.objects.get(id=user_id)
             user.status = AccountStatusEnum.ACTIVED
             user.save(update_fields=["status"])
+            
             return True
         except Exception as e:
             print(e)
@@ -36,13 +48,17 @@ class UserService:
         except:
             return None
         
-    def search(self, keyword: str) -> list:
-        search_query = SearchQuery(keyword)
-        queryset = User.objects.annotate(
-            rank_email=SearchRank(SearchVector("email"), search_query),
-            rank_name=SearchRank(SearchVector("first_name", "last_name"), search_query)
-        ).filter(
-            Q(email__icontains=keyword) | Q(first_name__icontains=keyword) | Q(last_name__icontains=keyword)
-        ).order_by("-rank_email", "-rank_name")
+    def search(self, keyword: str|None) -> list:
+        if keyword is None:
+            queryset = self.all()
+        else:
+            queryset = User.objects.filter(
+                Q(email__icontains=keyword) 
+                | Q(first_name__icontains=keyword) 
+                | Q(last_name__icontains=keyword)
+            )
 
         return UserSerializer(queryset, exclude=["password"], many=True).data
+    
+    def all(self) -> list[User]:
+        return User.objects.all()

@@ -24,7 +24,11 @@ class UserView(viewsets.ViewSet):
     def retrieve(self, request: Request, pk=None):
         try:
             data = self.user_service.get_user_by_id(user_id=pk)
-            return RestResponse().success().set_data(data).response
+
+            if data is None:
+                return RestResponse().defined_error().set_message("Không tìm thấy người dùng này trong hệ thống!").response 
+            else:
+                return RestResponse().success().set_data(data).response
         except Exception as e:
             print(e)
             return RestResponse().internal_server_error().response
@@ -34,10 +38,12 @@ class UserView(viewsets.ViewSet):
     def lock_user(self, request: Request, pk=None):   
         try:
             result = self.user_service.lock_user(user_id=pk)
-            if result:
-                return RestResponse().success().set_message("Khóa tài khoản thành công!!").response
-            else:
-                return RestResponse().defined_error().set_message("Có chút trục trặc trong khi chúng tôi đang cố gắng thay đổi thông tin của bạn!").response
+
+            return {
+                1: RestResponse().defined_error().set_message("Tài khoản này đã bị khóa rồi!").response,
+                2: RestResponse().success().set_message("Khóa tài khoản thành công!!").response,
+                3: RestResponse().defined_error().set_message("Có chút trục trặc trong khi chúng tôi đang cố gắng thay đổi thông tin của bạn!").response
+            }[result]
         except Exception as e:
             print(e)
             return RestResponse().internal_server_error().response
@@ -47,6 +53,7 @@ class UserView(viewsets.ViewSet):
     def unlock_user(self, request: Request, pk=None):   
         try:
             result = self.user_service.unlock_user(user_id=pk)
+            
             if result:
                 return RestResponse().success().set_message("Mở khóa tài khoản thành công!!").response
             else:
@@ -56,11 +63,17 @@ class UserView(viewsets.ViewSet):
             return RestResponse().internal_server_error().response
         
     @action(methods=["GET"], detail=False, url_path="search")
-    @swagger_auto_schema(manual_parameters=[SwaggerProvider.header_authentication()])
-    def lock_user(self, request: Request):
+    @swagger_auto_schema(
+        manual_parameters=[
+            SwaggerProvider.header_authentication(),
+            SwaggerProvider.query_param("kw", openapi.TYPE_STRING)
+        ]
+    )
+    def search(self, request: Request):
         try:
-            keyword = request.query_params.get("keyword")
+            keyword = request.query_params.get("kw", None)
             data = self.user_service.search(keyword=keyword)
+
             return RestResponse().success().set_data(data).response
         except Exception as e:
             print(e)
