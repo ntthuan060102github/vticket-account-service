@@ -17,7 +17,6 @@ class ProfileService():
         
     def update_profile(self, user: User, update_data: dict) -> bool:
         try:
-            print(user)
             for k, v in update_data.items():
                 setattr(user, k, v)
 
