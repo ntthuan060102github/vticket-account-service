@@ -58,7 +58,7 @@ class UserService:
                 | Q(last_name__icontains=keyword)
             )
 
-        return UserSerializer(queryset, exclude=["password"], many=True).data
+        return UserSerializer(queryset.order_by("id"), exclude=["password"], many=True).data
     
     def all(self) -> list[User]:
         return User.objects.all()
