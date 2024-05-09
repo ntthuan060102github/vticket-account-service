@@ -34,7 +34,7 @@ class ProfileView(viewsets.ViewSet):
             url = self.image_storage_provider.upload_image(validated_body["image"])
             updated = self.profile_service.change_avatar(request.user.id, url)
             if updated:
-                return RestResponse().success().set_message("Một diện mạo mới, một tinh thần mới! 😄✨").response
+                return RestResponse().success().set_data({"avatar_url": url}).set_message("Một diện mạo mới, một tinh thần mới! 😄✨").response
             else:
                 return RestResponse().defined_error().set_message("Có chút trục trặc trong khi chúng tôi đang cố gắng thay bức hình tuyệt vời này!").response
         except Exception as e:
