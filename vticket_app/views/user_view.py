@@ -29,7 +29,7 @@ class UserView(viewsets.ViewSet):
             print(e)
             return RestResponse().internal_server_error().response
 
-    @action(methods=["PATCH"], detail=True, url_path="lock")
+    @action(methods=["GET"], detail=True, url_path="lock")
     @swagger_auto_schema(manual_parameters=[SwaggerProvider.header_authentication()])
     def lock_user(self, request: Request, pk=None):   
         try:
@@ -44,7 +44,7 @@ class UserView(viewsets.ViewSet):
             print(e)
             return RestResponse().internal_server_error().response
         
-    @action(methods=["PATCH"], detail=True, url_path="unlock")
+    @action(methods=["GET"], detail=True, url_path="unlock")
     @swagger_auto_schema(manual_parameters=[SwaggerProvider.header_authentication()])
     def unlock_user(self, request: Request, pk=None):   
         try:
