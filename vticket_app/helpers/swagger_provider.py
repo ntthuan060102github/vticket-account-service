@@ -6,5 +6,9 @@ class SwaggerProvider():
         return openapi.Parameter('Authorization', in_=openapi.IN_HEADER, type=openapi.TYPE_STRING, description='Authorization')
     
     @staticmethod
-    def form_data(name: str, type: str, description: str = ""):
+    def query_param(name: str, type: str = openapi.TYPE_STRING, description: str = ""):
+        return openapi.Parameter(name, in_=openapi.IN_QUERY, type=type, description=description)
+
+    @staticmethod
+    def form_data(name: str, type: str = openapi.TYPE_STRING, description: str = ""):
         return openapi.Parameter(name, in_=openapi.IN_FORM, type=type, description=description)
