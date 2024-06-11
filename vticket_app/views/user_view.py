@@ -28,6 +28,19 @@ class UserView(viewsets.ViewSet):
         except Exception as e:
             print(e)
             return RestResponse().internal_server_error().response
+    
+    @action(methods=["GET"], detail=True, url_path="internal", authentication_classes=(), permission_classes=())
+    def get_user_by_id(self, request: Request, pk=None):
+        try:
+            data = self.user_service.get_user_by_id(user_id=pk)
+
+            if data is None:
+                return RestResponse().defined_error().set_message("Không tìm thấy người dùng này trong hệ thống!").response 
+            else:
+                return RestResponse().success().set_data(data).response
+        except Exception as e:
+            print(e)
+            return RestResponse().internal_server_error().response
 
     @action(methods=["GET"], detail=True, url_path="lock")
     @swagger_auto_schema(manual_parameters=[SwaggerProvider.header_authentication()])
