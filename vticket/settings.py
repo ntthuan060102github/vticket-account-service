@@ -59,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'vticket_app.middlewares.request_log_layer.RequestLogLayer'
 ]
 
 ROOT_URLCONF = 'vticket.urls'
@@ -193,6 +194,9 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER", None)
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", None)
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
+
+# AMQP
+AMQP_URL = config("AMQP_URL", None)
 
 # Cache configs
 CACHES = {

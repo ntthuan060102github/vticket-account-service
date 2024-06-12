@@ -14,3 +14,4 @@ whitenoise
 firebase_admin
 Pillow
 django-cors-headers
+pika
