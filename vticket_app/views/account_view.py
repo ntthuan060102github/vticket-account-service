@@ -112,7 +112,7 @@ class AccountView(viewsets.ViewSet):
                 AccountErrorEnum.INCORRECT_PASSWORD: RestResponse().defined_error().set_message("Mật khẩu hiện tại chưa chính xác!").response,
                 AccountErrorEnum.WEAK_PASSWORD: RestResponse().defined_error().set_message("Mẩt khẩu phải dài tối thiểu 8 ký tực và tối đa 30 ký tự, bao gồm ít nhất một chữ thường, một chữ hoa, một chữ số và một ký tự đặc biệt!").response,
                 AccountErrorEnum.NOT_EXISTS: RestResponse().defined_error().set_message("Này bạn! Tài khoản của bạn không tồn tại trong hệ thống của chúng tôi.").response,
-                AccountErrorEnum.ALL_OK: RestResponse().defined_error().set_message("Great job! Mật khẩu mới của bạn đã được cập nhật thành công. Bạn đã làm một việc tuyệt vời để bảo vệ thông tin cá nhân của mình!").response,
+                AccountErrorEnum.ALL_OK: RestResponse().success().set_message("Great job! Mật khẩu mới của bạn đã được cập nhật thành công. Bạn đã làm một việc tuyệt vời để bảo vệ thông tin cá nhân của mình!").response,
             }[result]
         except Exception as e:
             print(e)
