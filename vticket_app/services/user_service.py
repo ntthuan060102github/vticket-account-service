@@ -61,3 +61,6 @@ class UserService:
     
     def all(self) -> list[User]:
         return User.objects.all()
+    
+    def get_user_by_ids(self, ids: list):
+        return User.objects.filter(id__in=ids)

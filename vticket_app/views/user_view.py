@@ -1,3 +1,4 @@
+from django.conf import settings
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
@@ -5,11 +6,13 @@ from rest_framework import viewsets
 from rest_framework.decorators import action, parser_classes
 from rest_framework.request import Request
 
+from vticket_app.decorators.validate_body import validate_body
 from vticket_app.services.user_service import UserService
 from vticket_app.serializers.user_serializer import UserSerializer
 from vticket_app.utils.response import RestResponse
 from vticket_app.middlewares.custom_permissions.is_admin import IsAdmin
 from vticket_app.helpers.swagger_provider import SwaggerProvider
+from vticket_app.validations.get_users_validator import GetUsersValidation
 
 class UserView(viewsets.ViewSet):
     permission_classes = (IsAdmin,)
@@ -84,6 +87,20 @@ class UserView(viewsets.ViewSet):
             data = self.user_service.search(keyword=keyword)
 
             return RestResponse().success().set_data(data).response
+        except Exception as e:
+            print(e)
+            return RestResponse().internal_server_error().response
+        
+
+    @action(methods=["POST"], detail=False, url_path="list", authentication_classes=(), permission_classes=())
+    @swagger_auto_schema(request_body=GetUsersValidation)
+    @validate_body(GetUsersValidation)
+    def get_user_by_ids(self, request: Request, validated_body):
+        try:
+            data = self.user_service.get_user_by_ids(ids=validated_body["ids"])
+            print(settings.DATABASES['default'])
+            return RestResponse().success().set_data(UserSerializer(data, many=True, fields={'id', 'first_name', 'last_name','avatar_url'}).data).response
+                
         except Exception as e:
             print(e)
             return RestResponse().internal_server_error().response
