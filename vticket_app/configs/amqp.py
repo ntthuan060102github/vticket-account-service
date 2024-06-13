@@ -7,8 +7,8 @@ class Publisher:
 
     def __init__(self):
         self._params = pika.URLParameters(settings.AMQP_URL)
-        self.client_properties = {
-            "connection_name": "event_service"
+        self._params.client_properties = {
+            "connection_name": "account_service"
         }
         self._conn = None
         self._channel = None
