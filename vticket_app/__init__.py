@@ -1,0 +1,1 @@
+from vticket_app.configs.amqp import *
