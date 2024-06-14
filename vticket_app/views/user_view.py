@@ -15,10 +15,11 @@ from vticket_app.middlewares.custom_permissions.is_admin import IsAdmin
 from vticket_app.helpers.swagger_provider import SwaggerProvider
 from vticket_app.validations.get_users_validator import GetUsersValidation
 
-class UserView(viewsets.ViewSet):
+class UserView(viewsets.GenericViewSet):
     permission_classes = (IsAdmin,)
     user_service = UserService()
     user_serializer = UserSerializer()
+    pagination_class = PagePagination
 
     @swagger_auto_schema(manual_parameters=[SwaggerProvider.header_authentication()])
     def retrieve(self, request: Request, pk=None):
@@ -105,28 +106,14 @@ class UserView(viewsets.ViewSet):
             print(e)
             return RestResponse().internal_server_error().response
         
-    @swagger_auto_schema(
-        manual_parameters=[
-            SwaggerProvider.header_authentication(),
-            SwaggerProvider.query_param("page_num", openapi.TYPE_INTEGER),
-            SwaggerProvider.query_param("page_size", openapi.TYPE_INTEGER)
-        ]
-    )
+    @swagger_auto_schema(manual_parameters=[SwaggerProvider.header_authentication()])
     def list(self, request: Request):
         try:
-            data = self.user_service.all()
-            paginator = PagePagination()
-            paginated_queryset = paginator.paginate_queryset(data, request)
-            serialized_data = UserSerializer(paginated_queryset, many=True, exclude=["password"]).data
-            return RestResponse().success().set_data(
-                {
-                'total_pages': paginator.page.paginator.num_pages,
-                'total_items': paginator.page.paginator.count,
-                'page_size': paginator.page.paginator.per_page,
-                'data': serialized_data
-                }
-            ).response
-        
+            users = self.user_service.all()
+            pusers = self.paginate_queryset(users)
+            data = UserSerializer(pusers, many=True, exclude=["password"]).data
+            pdata = self.get_paginated_response(data)
+            return RestResponse().success().set_data(pdata).response        
         except Exception as e:
             print(e)
             return RestResponse().internal_server_error().response

@@ -60,7 +60,7 @@ class UserService:
         return UserSerializer(queryset.order_by("id"), exclude=["password"], many=True).data
     
     def all(self) -> list[User]:
-        return User.objects.all()
+        return User.objects.all().order_by("id")
     
     def get_user_by_ids(self, ids: list):
         return User.objects.filter(id__in=ids)

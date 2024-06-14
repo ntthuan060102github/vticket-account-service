@@ -148,7 +148,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         'vticket_app.middlewares.custom_jwt_authentication.CustomJWTAuthentication',
     ),
-    "EXCEPTION_HANDLER": "vticket_app.middlewares.custom_exception_handler.custom_exception_handler"
+    "EXCEPTION_HANDLER": "vticket_app.middlewares.custom_exception_handler.custom_exception_handler",
 }
 
 SIMPLE_JWT = {
