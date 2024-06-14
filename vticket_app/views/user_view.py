@@ -7,6 +7,7 @@ from rest_framework.decorators import action, parser_classes
 from rest_framework.request import Request
 
 from vticket_app.decorators.validate_body import validate_body
+from vticket_app.helpers.page_pagination import PagePagination
 from vticket_app.services.user_service import UserService
 from vticket_app.serializers.user_serializer import UserSerializer
 from vticket_app.utils.response import RestResponse
@@ -98,9 +99,34 @@ class UserView(viewsets.ViewSet):
     def get_user_by_ids(self, request: Request, validated_body):
         try:
             data = self.user_service.get_user_by_ids(ids=validated_body["ids"])
-            print(settings.DATABASES['default'])
             return RestResponse().success().set_data(UserSerializer(data, many=True, fields={'id', 'first_name', 'last_name','avatar_url'}).data).response
                 
+        except Exception as e:
+            print(e)
+            return RestResponse().internal_server_error().response
+        
+    @swagger_auto_schema(
+        manual_parameters=[
+            SwaggerProvider.header_authentication(),
+            SwaggerProvider.query_param("page_num", openapi.TYPE_INTEGER),
+            SwaggerProvider.query_param("page_size", openapi.TYPE_INTEGER)
+        ]
+    )
+    def list(self, request: Request):
+        try:
+            data = self.user_service.all()
+            paginator = PagePagination()
+            paginated_queryset = paginator.paginate_queryset(data, request)
+            serialized_data = UserSerializer(paginated_queryset, many=True, exclude=["password"]).data
+            return RestResponse().success().set_data(
+                {
+                'total_pages': paginator.page.paginator.num_pages,
+                'total_items': paginator.page.paginator.count,
+                'page_size': paginator.page.paginator.per_page,
+                'data': serialized_data
+                }
+            ).response
+        
         except Exception as e:
             print(e)
             return RestResponse().internal_server_error().response
