@@ -35,8 +35,6 @@ class AccountView(viewsets.ViewSet):
                 AccountErrorEnum.ALL_OK: RestResponse().direct(f"/otp/{_email}").set_message("Chúc mừng! Bạn vừa tạo ra một hồn ma mới trong hệ thống!").response,
                 AccountErrorEnum.EXISTED: RestResponse().defined_error().set_message("Email đã tồn tại trong hệ thống!").response,
             }[result]
-            
-            return 
         except Exception as e:
             print(e)
             return RestResponse().internal_server_error().response

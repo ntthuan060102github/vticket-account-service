@@ -7,6 +7,7 @@ from vticket_app.enums.account_error_enum import AccountErrorEnum
 from vticket_app.enums.account_status_enum import AccountStatusEnum
 from vticket_app.helpers.password_provider import PasswordProvider
 from vticket_app.helpers.email_providers.email_provider import EmailProvider
+from vticket_app.tasks.queue_tasks import async_send_email
 
 class AccountService():
     email_provider = EmailProvider()
@@ -26,13 +27,15 @@ class AccountService():
             
             otp = self.otp_provider.generate_6_char()
             self.otp_provider.save_otp_to_time_db(otp=otp, key=f"registration:{account.email}", ttl=15*60)
-            self.email_provider.send_html_template_email(
-                to=[account.email],
-                cc=[],
-                subject=self.mail_info["registration"][1],
-                template_name=self.mail_info["registration"][0],
-                context={
-                    "otp": otp
+            async_send_email.apply_async(
+                kwargs={
+                    "to": [account.email],
+                    "cc": [],
+                    "subject": self.mail_info["registration"][1],
+                    "template_name": self.mail_info["registration"][0],
+                    "context": {
+                        "otp": otp
+                    }
                 }
             )
 
@@ -49,13 +52,15 @@ class AccountService():
             otp = self.otp_provider.generate_6_char()
             self.otp_provider.save_otp_to_time_db(otp=otp, key=f"reset_password:{email}", ttl=15*60)
 
-            self.email_provider.send_html_template_email(
-                to=[account.email],
-                cc=[],
-                subject=self.mail_info["reset_password"][1],
-                template_name=self.mail_info["reset_password"][0],
-                context={
-                    "otp": otp
+            async_send_email.apply_async(
+                kwargs={
+                    "to": [account.email],
+                    "cc": [],
+                    "subject": self.mail_info["reset_password"][1],
+                    "template_name": self.mail_info["reset_password"][0],
+                    "context": {
+                        "otp": otp
+                    }
                 }
             )
             
@@ -77,13 +82,15 @@ class AccountService():
             account.set_password(new_password)
             account.save(update_fields=["password"])
 
-            self.email_provider.send_html_template_email(
-                to=[account.email],
-                cc=[],
-                subject=self.mail_info["new_password"][1],
-                template_name=self.mail_info["new_password"][0],
-                context={
-                    "new_password": new_password
+            async_send_email.apply_async(
+                kwargs={
+                    "to": [account.email],
+                    "cc": [],
+                    "subject": self.mail_info["new_password"][1],
+                    "template_name": self.mail_info["new_password"][0],
+                    "context": {
+                        "new_password": new_password
+                    }
                 }
             )
             return AccountErrorEnum.ALL_OK
@@ -133,12 +140,14 @@ class AccountService():
     def resend_registration_otp(self, email: str):
         otp = self.otp_provider.generate_6_char()
         self.otp_provider.save_otp_to_time_db(otp=otp, key=f"registration:{email}", ttl=15*60)
-        self.email_provider.send_html_template_email(
-            to=[email],
-            cc=[],
-            subject=self.mail_info["registration"][1],
-            template_name=self.mail_info["registration"][0],
-            context={
-                "otp": otp
+        async_send_email.apply_async(
+            kwargs={
+                "to": [email],
+                "cc": [],
+                "subject": self.mail_info["registration"][1],
+                "template_name": self.mail_info["registration"][0],
+                "context": {
+                    "otp": otp
+                }
             }
         )

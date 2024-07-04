@@ -14,12 +14,15 @@ from vticket_app.utils.response import RestResponse
 from vticket_app.middlewares.custom_permissions.is_admin import IsAdmin
 from vticket_app.helpers.swagger_provider import SwaggerProvider
 from vticket_app.validations.get_users_validator import GetUsersValidation
+from vticket_app.models.user import User
 
 class UserView(viewsets.GenericViewSet):
     permission_classes = (IsAdmin,)
     user_service = UserService()
     user_serializer = UserSerializer()
     pagination_class = PagePagination
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
 
     @swagger_auto_schema(manual_parameters=[SwaggerProvider.header_authentication()])
     def retrieve(self, request: Request, pk=None):
