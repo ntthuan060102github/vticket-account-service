@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'vticket_app',
     'corsheaders',
+    'django_celery_beat'
 ]
 
 MIDDLEWARE = [
